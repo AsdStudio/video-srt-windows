@@ -20,8 +20,8 @@ const APP_VERSION = "0.3.2"
 var AppRootDir string
 var mw *MyMainWindow
 
-var UseLanguage = Setings.GetCacheAppSetingsData().ShowLanguage
-
+var UseLanguage = Settings.GetCacheAppSettingsData().ShowLanguage
+var Fontfamily string
 var (
 	outputSrtChecked *walk.CheckBox
 	outputLrcChecked *walk.CheckBox
@@ -39,10 +39,19 @@ func init()  {
 	mw = new(MyMainWindow)
 
 	AppRootDir = GetAppRootDir()
+	switch UseLanguage {
+	case "zh_Hans":
+		Fontfamily="Microsoft YaHei"
+	case "zh_Hant":
+		Fontfamily="Microsoft JhengHei"
+	default:
+		Fontfamily="Tahoma"
+	}
 
-	UseLanguageFile :=fmt.Sprintf("language/%s.ini",UseLanguage)
-	_ = tool.LocaleInit(UseLanguage, UseLanguageFile)
-	log.Println(UseLanguage,UseLanguageFile,i18n.Tr(UseLanguage,"Hello"))
+	_ = tool.LocaleInit(UseLanguage, fmt.Sprintf("language/%s.ini",UseLanguage))
+	//log locale
+	log.Println(UseLanguage,fmt.Sprintf("language/%s.ini",UseLanguage),i18n.Tr(UseLanguage,"Hello"))
+	//log
 	if AppRootDir == "" {
 		panic("应用根目录获取失败")
 	}
@@ -75,11 +84,11 @@ func main() {
 	var translateEngineOptionsBox *walk.ComboBox
 	var dropFilesEdit *walk.TextEdit
 
-	var appSetings = Setings.GetCacheAppSetingsData()
+	var appSettings = Settings.GetCacheAppSettingsData()
 	var appFilter = Filter.GetCacheAppFilterData()
 
 	//初始化展示配置
-	operateFrom.Init(appSetings)
+	operateFrom.Init(appSettings)
 
 	//日志
 	var tasklog = NewTasklog(logText)
@@ -94,9 +103,9 @@ func main() {
 		tasklog.AppendLogText(strs)
 	})
 	//字幕输出目录
-	videosrt.SetSrtDir(appSetings.SrtFileDir)
+	videosrt.SetSrtDir(appSettings.SrtFileDir)
 	//注册[字幕生成]多任务
-	var multitask = NewVideoMultitask(appSetings.MaxConcurrency)
+	var multitask = NewVideoMultitask(appSettings.MaxConcurrency)
 
 
 	//字幕翻译应用
@@ -109,15 +118,16 @@ func main() {
 		tasklog.AppendLogText(strs)
 	})
 	//文件输出目录
-	srtTranslateApp.SetSrtDir(appSetings.SrtFileDir)
+	srtTranslateApp.SetSrtDir(appSettings.SrtFileDir)
 	//注册[字幕翻译]多任务
-	var srtTranslateMultitask = NewTranslateMultitask(appSetings.MaxConcurrency)
+	var srtTranslateMultitask = NewTranslateMultitask(appSettings.MaxConcurrency)
+
 
 	if err := (MainWindow{
 		AssignTo: &mw.MainWindow,
 		Icon:"./data/img/index.png",
-		Title:    i18n.Tr(UseLanguage,"Hello")+"VideoSrt - 一键字幕生成、字幕翻译小工具" + " - " + APP_VERSION,
-		Font:Font{Family: "微软雅黑", PointSize: 9},
+		Title:"VideoSrt - 一键字幕生成、字幕翻译小工具" + " -v" + APP_VERSION,
+		Font:Font{Family: Fontfamily, PointSize: 9},
 		ToolBar: ToolBar{
 			ButtonStyle: ToolBarButtonImageBeforeText,
 			Items: []MenuItem{
@@ -170,26 +180,26 @@ func main() {
 							Image:  "./data/img/voice.png",
 							Text:   "语音引擎（阿里云）",
 							OnTriggered: func() {
-								mw.RunSpeechEngineSetingDialog(mw , func() {
+								mw.RunSpeechEngineSettingDialog(mw , func() {
 									thisData := Engine.GetEngineOptionsSelects()
 
 									//校验选择的翻译引擎是否存在
-									_ , ok := Engine.GetEngineById(appSetings.CurrentEngineId)
-									if appSetings.CurrentEngineId == 0 || !ok {
-										appSetings.CurrentEngineId = thisData[0].Id
+									_ , ok := Engine.GetEngineById(appSettings.CurrentEngineId)
+									if appSettings.CurrentEngineId == 0 || !ok {
+										appSettings.CurrentEngineId = thisData[0].Id
 
 										//更新缓存
-										Setings.SetCacheAppSetingsData(appSetings)
+										Settings.SetCacheAppSettingsData(appSettings)
 									}
 
 									//重新加载选项
 									_ = engineOptionsBox.SetModel(thisData)
 									//重置index
-									engIndex := Engine.GetCurrentIndex(thisData , appSetings.CurrentEngineId)
+									engIndex := Engine.GetCurrentIndex(thisData , appSettings.CurrentEngineId)
 									if engIndex != -1 {
 										_ = engineOptionsBox.SetCurrentIndex(engIndex)
 									}
-									operateFrom.EngineId = appSetings.CurrentEngineId
+									operateFrom.EngineId = appSettings.CurrentEngineId
 								})
 							},
 						},
@@ -197,25 +207,25 @@ func main() {
 							Image:  "./data/img/translate.png",
 							Text:   "翻译引擎（百度翻译）",
 							OnTriggered: func() {
-								mw.RunBaiduTranslateEngineSetingDialog(mw , func() {
+								mw.RunBaiduTranslateEngineSettingDialog(mw , func() {
 									thisData := Translate.GetTranslateEngineOptionsSelects()
 
 									//校验选择的翻译引擎是否存在
-									_ , ok := Engine.GetEngineById(appSetings.CurrentEngineId)
-									if appSetings.CurrentTranslateEngineId == 0 || !ok {
-										appSetings.CurrentTranslateEngineId = thisData[0].Id
+									_ , ok := Engine.GetEngineById(appSettings.CurrentEngineId)
+									if appSettings.CurrentTranslateEngineId == 0 || !ok {
+										appSettings.CurrentTranslateEngineId = thisData[0].Id
 										//更新缓存
-										Setings.SetCacheAppSetingsData(appSetings)
+										Settings.SetCacheAppSettingsData(appSettings)
 									}
 
 									//重新加载选项
 									_ = translateEngineOptionsBox.SetModel(thisData)
 									//重置index
-									engIndex := Translate.GetCurrentTranslateEngineIndex(thisData , appSetings.CurrentTranslateEngineId)
+									engIndex := Translate.GetCurrentTranslateEngineIndex(thisData , appSettings.CurrentTranslateEngineId)
 									if engIndex != -1 {
 										_ = translateEngineOptionsBox.SetCurrentIndex(engIndex)
 									}
-									operateFrom.TranslateEngineId = appSetings.CurrentTranslateEngineId
+									operateFrom.TranslateEngineId = appSettings.CurrentTranslateEngineId
 								})
 							},
 						},
@@ -223,22 +233,22 @@ func main() {
 							Image:  "./data/img/translate.png",
 							Text:   "翻译引擎（腾讯云）",
 							OnTriggered: func() {
-								mw.RunTengxunyunTranslateEngineSetingDialog(mw , func() {
+								mw.RunTengxunyunTranslateEngineSettingDialog(mw , func() {
 									thisData := Translate.GetTranslateEngineOptionsSelects()
-									if appSetings.CurrentTranslateEngineId == 0 {
-										appSetings.CurrentTranslateEngineId = thisData[0].Id
+									if appSettings.CurrentTranslateEngineId == 0 {
+										appSettings.CurrentTranslateEngineId = thisData[0].Id
 										//更新缓存
-										Setings.SetCacheAppSetingsData(appSetings)
+										Settings.SetCacheAppSettingsData(appSettings)
 									}
 
 									//重新加载选项
 									_ = translateEngineOptionsBox.SetModel(thisData)
 									//重置index
-									engIndex := Translate.GetCurrentTranslateEngineIndex(thisData , appSetings.CurrentTranslateEngineId)
+									engIndex := Translate.GetCurrentTranslateEngineIndex(thisData , appSettings.CurrentTranslateEngineId)
 									if engIndex != -1 {
 										_ = translateEngineOptionsBox.SetCurrentIndex(engIndex)
 									}
-									operateFrom.TranslateEngineId = appSetings.CurrentTranslateEngineId
+									operateFrom.TranslateEngineId = appSettings.CurrentTranslateEngineId
 								})
 							},
 						},
@@ -246,30 +256,30 @@ func main() {
 				},
 				Menu{
 					Text:  "设置",
-					Image: "./data/img/setings.png",
+					Image: "./data/img/Settings.png",
 					Items: []MenuItem{
 						Action{
 							Text:    "OSS对象存储设置",
 							Image:   "./data/img/oss.png",
 							OnTriggered: func() {
-								mw.RunObjectStorageSetingDialog(mw)
+								mw.RunObjectStorageSettingDialog(mw)
 							},
 						},
 						Action{
 							Text:    "软件设置",
-							Image:   "./data/img/app-setings.png",
+							Image:   "./data/img/app-Settings.png",
 							OnTriggered: func() {
-								mw.RunAppSetingDialog(mw , func(setings *AppSetings) {
+								mw.RunAppSettingDialog(mw , func(Settings *AppSettings) {
 									//更新配置
-									appSetings.MaxConcurrency = setings.MaxConcurrency
-									appSetings.SrtFileDir = setings.SrtFileDir
-									appSetings.CloseNewVersionMessage = setings.CloseNewVersionMessage
-									appSetings.CloseAutoDeleteOssTempFile = setings.CloseAutoDeleteOssTempFile
-									appSetings.CloseIntelligentBlockSwitch = setings.CloseIntelligentBlockSwitch
-									appSetings.ShowLanguage = setings.ShowLanguage
+									appSettings.MaxConcurrency = Settings.MaxConcurrency
+									appSettings.SrtFileDir = Settings.SrtFileDir
+									appSettings.CloseNewVersionMessage = Settings.CloseNewVersionMessage
+									appSettings.CloseAutoDeleteOssTempFile = Settings.CloseAutoDeleteOssTempFile
+									appSettings.CloseIntelligentBlockSwitch = Settings.CloseIntelligentBlockSwitch
+									appSettings.ShowLanguage = Settings.ShowLanguage
 
-									multitask.SetMaxConcurrencyNumber( setings.MaxConcurrency )
-									srtTranslateMultitask.SetMaxConcurrencyNumber( setings.MaxConcurrency )
+									multitask.SetMaxConcurrencyNumber( Settings.MaxConcurrency )
+									srtTranslateMultitask.SetMaxConcurrencyNumber( Settings.MaxConcurrency )
 								})
 							},
 						},
@@ -352,9 +362,9 @@ func main() {
 										return
 									}
 
-									appSetings.CurrentEngineId = operateFrom.EngineId
+									appSettings.CurrentEngineId = operateFrom.EngineId
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 							PushButton{
@@ -364,7 +374,7 @@ func main() {
 									var thisEngineOptions = make([]*EngineSelects , 0)
 									thisEngineOptions = Engine.GetEngineOptionsSelects()
 									//删除校验
-									if appSetings.CurrentEngineId == 0 {
+									if appSettings.CurrentEngineId == 0 {
 										mw.NewErrormationTips("错误" , "请选择要操作的语音引擎")
 										return
 									}
@@ -374,7 +384,7 @@ func main() {
 									}
 
 									//删除引擎
-									if ok := Engine.RemoveCacheAliyunEngineData(appSetings.CurrentEngineId);ok == false {
+									if ok := Engine.RemoveCacheAliyunEngineData(appSettings.CurrentEngineId);ok == false {
 										//删除失败
 										mw.NewErrormationTips("错误" , "语音引擎删除失败")
 										return
@@ -385,10 +395,10 @@ func main() {
 									//重新加载列表
 									_ = engineOptionsBox.SetModel(thisEngineOptions)
 
-									appSetings.CurrentEngineId = thisEngineOptions[0].Id
-									operateFrom.EngineId = appSetings.CurrentEngineId
+									appSettings.CurrentEngineId = thisEngineOptions[0].Id
+									operateFrom.EngineId = appSettings.CurrentEngineId
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 									//更新下标
 									_ = engineOptionsBox.SetCurrentIndex(0)
 								},
@@ -420,9 +430,9 @@ func main() {
 										return
 									}
 
-									appSetings.CurrentTranslateEngineId = operateFrom.TranslateEngineId
+									appSettings.CurrentTranslateEngineId = operateFrom.TranslateEngineId
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 							PushButton{
@@ -432,7 +442,7 @@ func main() {
 									var thisEngineOptions = make([]*TranslateEngineSelects , 0)
 									thisEngineOptions = Translate.GetTranslateEngineOptionsSelects()
 									//删除校验
-									if appSetings.CurrentTranslateEngineId == 0 {
+									if appSettings.CurrentTranslateEngineId == 0 {
 										mw.NewErrormationTips("错误" , "请选择要删除的翻译引擎")
 										return
 									}
@@ -442,7 +452,7 @@ func main() {
 									}
 
 									//删除引擎
-									if ok := Translate.RemoveCacheTranslateEngineData(appSetings.CurrentTranslateEngineId);ok == false {
+									if ok := Translate.RemoveCacheTranslateEngineData(appSettings.CurrentTranslateEngineId);ok == false {
 										//删除失败
 										mw.NewErrormationTips("错误" , "翻译引擎删除失败")
 										return
@@ -453,10 +463,10 @@ func main() {
 									//重新加载列表
 									_ = translateEngineOptionsBox.SetModel(thisEngineOptions)
 
-									appSetings.CurrentTranslateEngineId = thisEngineOptions[0].Id
-									operateFrom.TranslateEngineId = appSetings.CurrentTranslateEngineId
+									appSettings.CurrentTranslateEngineId = thisEngineOptions[0].Id
+									operateFrom.TranslateEngineId = appSettings.CurrentTranslateEngineId
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 									//更新下标
 									_ = translateEngineOptionsBox.SetCurrentIndex(0)
 								},
@@ -486,9 +496,9 @@ func main() {
 								OnClicked: func() {
 									_ = operateTranslateDb.Submit()
 
-									appSetings.TranslateSwitch = operateFrom.TranslateSwitch
+									appSettings.TranslateSwitch = operateFrom.TranslateSwitch
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 							CheckBox{
@@ -497,9 +507,9 @@ func main() {
 								OnClicked: func() {
 									_ = operateTranslateDb.Submit()
 
-									appSetings.BilingualSubtitleSwitch = operateFrom.BilingualSubtitleSwitch
+									appSettings.BilingualSubtitleSwitch = operateFrom.BilingualSubtitleSwitch
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 							CheckBox{
@@ -508,9 +518,9 @@ func main() {
 								OnClicked: func() {
 									_ = operateTranslateDb.Submit()
 
-									appSetings.OutputMainSubtitleInputLanguage = operateFrom.OutputMainSubtitleInputLanguage
+									appSettings.OutputMainSubtitleInputLanguage = operateFrom.OutputMainSubtitleInputLanguage
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 
@@ -527,9 +537,9 @@ func main() {
 								MaxSize:Size{Width:80},
 								OnCurrentIndexChanged: func() {
 									_ = operateTranslateDb.Submit()
-									appSetings.InputLanguage = operateFrom.InputLanguage
+									appSettings.InputLanguage = operateFrom.InputLanguage
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 							//输出语言
@@ -545,9 +555,9 @@ func main() {
 								MaxSize:Size{Width:80},
 								OnCurrentIndexChanged: func() {
 									_ = operateTranslateDb.Submit()
-									appSetings.OutputLanguage = operateFrom.OutputLanguage
+									appSettings.OutputLanguage = operateFrom.OutputLanguage
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 						},
@@ -594,7 +604,7 @@ func main() {
 								Text: "语气词过滤设置",
 								MaxSize:Size{95 , 55},
 								OnClicked: func() {
-									mw.RunGlobalFilterSetingDialog(mw , appFilter.GlobalFilter.Words , func(words string) {
+									mw.RunGlobalFilterSettingDialog(mw , appFilter.GlobalFilter.Words , func(words string) {
 										appFilter.GlobalFilter.Words = words
 										//更新缓存
 										Filter.SetCacheAppFilterData(appFilter)
@@ -605,7 +615,7 @@ func main() {
 								Text: "自定义过滤设置",
 								MaxSize:Size{95 , 55},
 								OnClicked: func() {
-									mw.RunDefinedFilterSetingDialog(mw , appFilter.DefinedFilter.Rule , func(rule []*AppDefinedFilterRule) {
+									mw.RunDefinedFilterSettingDialog(mw , appFilter.DefinedFilter.Rule , func(rule []*AppDefinedFilterRule) {
 										appFilter.DefinedFilter.Rule = rule
 										//更新缓存
 										Filter.SetCacheAppFilterData(appFilter)
@@ -639,9 +649,9 @@ func main() {
 									_ = operateDb.Submit()
 
 									operateFrom.OutputType.SRT = operateFrom.OutputSrt
-									appSetings.OutputType = operateFrom.OutputType
+									appSettings.OutputType = operateFrom.OutputType
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 							CheckBox{
@@ -652,9 +662,9 @@ func main() {
 									_ = operateDb.Submit()
 
 									operateFrom.OutputType.LRC = operateFrom.OutputLrc
-									appSetings.OutputType = operateFrom.OutputType
+									appSettings.OutputType = operateFrom.OutputType
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 							CheckBox{
@@ -665,9 +675,9 @@ func main() {
 									_ = operateDb.Submit()
 
 									operateFrom.OutputType.TXT = operateFrom.OutputTxt
-									appSetings.OutputType = operateFrom.OutputType
+									appSettings.OutputType = operateFrom.OutputType
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 							//输出文件编码
@@ -683,9 +693,9 @@ func main() {
 								MaxSize:Size{Width:80},
 								OnCurrentIndexChanged: func() {
 									_ = operateDb.Submit()
-									appSetings.OutputEncode = operateFrom.OutputEncode
+									appSettings.OutputEncode = operateFrom.OutputEncode
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 							//输出文件音轨
@@ -701,9 +711,9 @@ func main() {
 								MaxSize:Size{Width:60},
 								OnCurrentIndexChanged: func() {
 									_ = operateDb.Submit()
-									appSetings.SoundTrack = operateFrom.SoundTrack
+									appSettings.SoundTrack = operateFrom.SoundTrack
 									//更新缓存
-									Setings.SetCacheAppSetingsData(appSetings)
+									Settings.SetCacheAppSettingsData(appSettings)
 								},
 							},
 						},
@@ -767,7 +777,7 @@ func main() {
 							tool.SetRandomSeed()
 
 							//查询应用配置
-							tempAppSetting := Setings.GetCacheAppSetingsData()
+							tempAppSetting := Settings.GetCacheAppSettingsData()
 
 							//参数校验
 							if !operateFrom.OutputType.SRT && !operateFrom.OutputType.LRC && !operateFrom.OutputType.TXT {
@@ -833,17 +843,17 @@ func main() {
 							videosrt.InitAppConfig(ossData , currentEngine)
 							videosrt.InitTranslateConfig(tempTranslateCfg)
 							videosrt.InitFilterConfig(appFilter)
-							videosrt.SetSrtDir(appSetings.SrtFileDir)
-							videosrt.SetSoundTrack(appSetings.SoundTrack)
-							videosrt.SetMaxConcurrency(appSetings.MaxConcurrency)
-							videosrt.SetCloseAutoDeleteOssTempFile(appSetings.CloseAutoDeleteOssTempFile)
-							videosrt.SetCloseIntelligentBlockSwitch(appSetings.CloseIntelligentBlockSwitch)
+							videosrt.SetSrtDir(appSettings.SrtFileDir)
+							videosrt.SetSoundTrack(appSettings.SoundTrack)
+							videosrt.SetMaxConcurrency(appSettings.MaxConcurrency)
+							videosrt.SetCloseAutoDeleteOssTempFile(appSettings.CloseAutoDeleteOssTempFile)
+							videosrt.SetCloseIntelligentBlockSwitch(appSettings.CloseIntelligentBlockSwitch)
 
 							//设置输出文件
 							videosrt.SetOutputType(operateFrom.OutputType)
 							//输出编码
-							if appSetings.OutputEncode != 0 {
-								videosrt.SetOutputEncode(appSetings.OutputEncode)
+							if appSettings.OutputEncode != 0 {
+								videosrt.SetOutputEncode(appSettings.OutputEncode)
 							}
 
 							multitask.SetVideoSrt(videosrt)
@@ -930,7 +940,7 @@ func main() {
 							tool.SetRandomSeed()
 
 							//查询应用配置
-							tempAppSetting := Setings.GetCacheAppSetingsData()
+							tempAppSetting := Settings.GetCacheAppSettingsData()
 
 							//参数校验
 							if !operateFrom.OutputType.SRT && !operateFrom.OutputType.LRC && !operateFrom.OutputType.TXT {
@@ -969,14 +979,14 @@ func main() {
 							//加载配置
 							srtTranslateApp.InitTranslateConfig(tempTranslateCfg)
 							srtTranslateApp.InitFilterConfig(appFilter)
-							srtTranslateApp.SetSrtDir(appSetings.SrtFileDir)
-							srtTranslateApp.SetMaxConcurrency(appSetings.MaxConcurrency)
+							srtTranslateApp.SetSrtDir(appSettings.SrtFileDir)
+							srtTranslateApp.SetMaxConcurrency(appSettings.MaxConcurrency)
 
 							//设置输出文件
 							srtTranslateApp.SetOutputType(operateFrom.OutputType)
 							//输出编码
-							if appSetings.OutputEncode != 0 {
-								srtTranslateApp.SetOutputEncode(appSetings.OutputEncode)
+							if appSettings.OutputEncode != 0 {
+								srtTranslateApp.SetOutputEncode(appSettings.OutputEncode)
 							}
 
 							//队列设置
@@ -1069,7 +1079,7 @@ func main() {
 	}
 
 	//尝试校验新版本
-	if appSetings.CloseNewVersionMessage == false {
+	if appSettings.CloseNewVersionMessage == false {
 		go func() {
 			appV := new(AppVersion)
 			if vtag, e := appV.GetVersion(); e == nil {

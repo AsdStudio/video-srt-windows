@@ -31,16 +31,16 @@ func (mw *MyMainWindow) NewErrormationTips(title string , message string) {
 
 
 // 运行 应用设置 Dialog
-func(mw *MyMainWindow) RunAppSetingDialog(owner walk.Form , confirmCall func(*AppSetings))  {
-	var seting *AppSetings
+func(mw *MyMainWindow) RunAppSettingDialog(owner walk.Form , confirmCall func(*AppSettings))  {
+	var Setting *AppSettings
 	var dlg *walk.Dialog
 	var db *walk.DataBinder
 	var acceptPB, cancelPB *walk.PushButton
 
-	seting = Setings.GetCacheAppSetingsData() //查询缓存数据
-	//fmt.Println( setings )
-	if seting.MaxConcurrency == 0 {
-		seting.MaxConcurrency = 2 //默认并发数
+	Setting = Settings.GetCacheAppSettingsData() //查询缓存数据
+	//fmt.Println( Settings )
+	if Setting.MaxConcurrency == 0 {
+		Setting.MaxConcurrency = 2 //默认并发数
 	}
 
 	Dialog{
@@ -51,8 +51,8 @@ func(mw *MyMainWindow) RunAppSetingDialog(owner walk.Form , confirmCall func(*Ap
 		CancelButton:  &cancelPB,
 		DataBinder: DataBinder{
 			AssignTo:       &db,
-			Name:           "setings",
-			DataSource:     seting,
+			Name:           "Settings",
+			DataSource:     Setting,
 			ErrorPresenter: ToolTipErrorPresenter{},
 		},
 		MinSize: Size{450, 220},
@@ -129,20 +129,20 @@ func(mw *MyMainWindow) RunAppSetingDialog(owner walk.Form , confirmCall func(*Ap
 								return
 							}
 							//目录校验
-							if seting.SrtFileDir != "" {
-								tmpDir := tool.WinDir(seting.SrtFileDir)
+							if Setting.SrtFileDir != "" {
+								tmpDir := tool.WinDir(Setting.SrtFileDir)
 								if !tool.DirExists(tmpDir) {
-									mw.NewErrormationTips("错误" , "目录无效/不存在：" + seting.SrtFileDir)
+									mw.NewErrormationTips("错误" , "目录无效/不存在：" + Setting.SrtFileDir)
 									return;
 								}
-								seting.SrtFileDir = tmpDir
+								Setting.SrtFileDir = tmpDir
 							}
 
 							//设置缓存
-							Setings.SetCacheAppSetingsData(seting)
+							Settings.SetCacheAppSettingsData(Setting)
 
 							//设置回调
-							confirmCall(seting)
+							confirmCall(Setting)
 
 							dlg.Accept()
 						},
@@ -160,7 +160,7 @@ func(mw *MyMainWindow) RunAppSetingDialog(owner walk.Form , confirmCall func(*Ap
 
 
 // 运行 新建语音引擎 Dialog
-func(mw *MyMainWindow) RunSpeechEngineSetingDialog(owner walk.Form , confirmCall func())  {
+func(mw *MyMainWindow) RunSpeechEngineSettingDialog(owner walk.Form , confirmCall func())  {
 	var engine *AliyunEngineCache
 	var dlg *walk.Dialog
 	var db *walk.DataBinder
@@ -301,7 +301,7 @@ func(mw *MyMainWindow) RunSpeechEngineSetingDialog(owner walk.Form , confirmCall
 
 
 // 运行 新建[百度]翻译引擎 Dialog
-func(mw *MyMainWindow) RunBaiduTranslateEngineSetingDialog(owner walk.Form , confirmCall func())  {
+func(mw *MyMainWindow) RunBaiduTranslateEngineSettingDialog(owner walk.Form , confirmCall func())  {
 	var engine *TranslateEngineStruct
 	var dlg *walk.Dialog
 	var db *walk.DataBinder
@@ -432,7 +432,7 @@ func(mw *MyMainWindow) RunBaiduTranslateEngineSetingDialog(owner walk.Form , con
 }
 
 // 运行 新建[腾讯云]翻译引擎 Dialog
-func(mw *MyMainWindow) RunTengxunyunTranslateEngineSetingDialog(owner walk.Form , confirmCall func())  {
+func(mw *MyMainWindow) RunTengxunyunTranslateEngineSettingDialog(owner walk.Form , confirmCall func())  {
 	var engine *TranslateEngineStruct
 	var dlg *walk.Dialog
 	var db *walk.DataBinder
@@ -555,7 +555,7 @@ func(mw *MyMainWindow) RunTengxunyunTranslateEngineSetingDialog(owner walk.Form 
 
 
 //运行 Oss对象存储配置 Dialog
-func (mw *MyMainWindow) RunObjectStorageSetingDialog(owner walk.Form) {
+func (mw *MyMainWindow) RunObjectStorageSettingDialog(owner walk.Form) {
 	var oss *AliyunOssCache
 	var dlg *walk.Dialog
 	var db *walk.DataBinder
@@ -683,12 +683,12 @@ func (mw *MyMainWindow) RunObjectStorageSetingDialog(owner walk.Form) {
 
 
 //运行 语气词过滤设置 Dialog
-func (mw *MyMainWindow) RunGlobalFilterSetingDialog (owner walk.Form , historyWords string , confirmCall func(words string)) {
+func (mw *MyMainWindow) RunGlobalFilterSettingDialog (owner walk.Form , historyWords string , confirmCall func(words string)) {
 	var dlg *walk.Dialog
 	var db *walk.DataBinder
 	var acceptPB, cancelPB *walk.PushButton
 
-	var tmpData = new(AppFilterSetings)
+	var tmpData = new(AppFilterSettings)
 	tmpData.GlobalFilter.Words = historyWords
 
 	Dialog{
@@ -849,7 +849,7 @@ func (tv *DefinedRuleTableModel) GetFilterRuleResult () []*AppDefinedFilterRule 
 
 
 //运行 自定义过滤设置 Dialog
-func (mw *MyMainWindow) RunDefinedFilterSetingDialog (owner walk.Form , historyRule []*AppDefinedFilterRule , confirmCall func(rule []*AppDefinedFilterRule)) {
+func (mw *MyMainWindow) RunDefinedFilterSettingDialog (owner walk.Form , historyRule []*AppDefinedFilterRule , confirmCall func(rule []*AppDefinedFilterRule)) {
 	var dlg *walk.Dialog
 	var acceptPB, cancelPB *walk.PushButton
 	var tv *walk.TableView

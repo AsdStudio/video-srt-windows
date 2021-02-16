@@ -53,11 +53,11 @@ type SrtTranslateResult struct {
 type SrtTranslateApp struct {
 	AppDir string //应用根目录
 	SrtDir string //文件输出目录
-	OutputType *AppSetingsOutput //输出文件类型
+	OutputType *AppSettingsOutput //输出文件类型
 	OutputEncode int //输出文件编码
 	MaxConcurrency int //最大处理并发数
 	TranslateCfg *SrtTranslateStruct //翻译配置
-	FilterSetings *AppFilterSetings //过滤器配置
+	FilterSettings *AppFilterSettings //过滤器配置
 
 	LogHandler func(s string , file string) //日志回调
 	SuccessHandler func(file string) //成功回调
@@ -81,8 +81,8 @@ func (app *SrtTranslateApp) InitTranslateConfig (translateSettings *SrtTranslate
 	app.TranslateCfg = translateSettings
 }
 //加载过滤器配置
-func (app *SrtTranslateApp) InitFilterConfig (filterSetings *AppFilterSetings) {
-	app.FilterSetings = filterSetings
+func (app *SrtTranslateApp) InitFilterConfig (filterSettings *AppFilterSettings) {
+	app.FilterSettings = filterSettings
 }
 
 
@@ -90,7 +90,7 @@ func (app *SrtTranslateApp) SetSrtDir(dir string)  {
 	app.SrtDir = dir
 }
 
-func (app *SrtTranslateApp) SetOutputType(output *AppSetingsOutput)  {
+func (app *SrtTranslateApp) SetOutputType(output *AppSettingsOutput)  {
 	app.OutputType = output
 }
 
@@ -247,15 +247,15 @@ func (app *SrtTranslateApp) SrtTranslate(file string , srtRows []*SrtRows)  {
 
 //字幕过滤处理
 func (app *SrtTranslateApp) SrtFilters (srtRows []*SrtRows , file string) {
-	if !app.FilterSetings.DefinedFilter.Switch && !app.FilterSetings.GlobalFilter.Switch {
+	if !app.FilterSettings.DefinedFilter.Switch && !app.FilterSettings.GlobalFilter.Switch {
 		return
 	}
 
 	app.Log("字幕过滤处理中 ..." , file)
 
 	//语气词过滤
-	if app.FilterSetings.GlobalFilter.Switch && strings.TrimSpace(app.FilterSetings.GlobalFilter.Words) != "" {
-		modalWords := strings.Split(app.FilterSetings.GlobalFilter.Words , "\r\n")
+	if app.FilterSettings.GlobalFilter.Switch && strings.TrimSpace(app.FilterSettings.GlobalFilter.Words) != "" {
+		modalWords := strings.Split(app.FilterSettings.GlobalFilter.Words , "\r\n")
 		for _ , row := range srtRows {
 			for _ , w := range modalWords {
 				row.Text = ModalWordsFilter(row.Text , w)
@@ -266,8 +266,8 @@ func (app *SrtTranslateApp) SrtFilters (srtRows []*SrtRows , file string) {
 		}
 	}
 	//自定义规则过滤
-	if app.FilterSetings.DefinedFilter.Switch && len(app.FilterSetings.DefinedFilter.Rule) > 0 {
-		rules := app.FilterSetings.DefinedFilter.Rule
+	if app.FilterSettings.DefinedFilter.Switch && len(app.FilterSettings.DefinedFilter.Rule) > 0 {
+		rules := app.FilterSettings.DefinedFilter.Rule
 		for _ , row := range srtRows {
 			for _ , ru := range rules {
 				row.Text = DefinedWordRuleFilter(row.Text , ru)

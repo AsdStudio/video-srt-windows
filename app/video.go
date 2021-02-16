@@ -48,14 +48,14 @@ type VideoSrt struct {
 	TempDir string //临时文件目录
 	AppDir string //应用根目录
 	SrtDir string //字幕文件输出目录
-	OutputType *AppSetingsOutput //输出文件类型
+	OutputType *AppSettingsOutput //输出文件类型
 	OutputEncode int //输出文件编码
 	SoundTrack int //输出音轨（0输出全部音轨）
 
 	MaxConcurrency int //最大处理并发数
 
 	TranslateCfg *VideoSrtTranslateStruct //翻译配置
-	FilterSetings *AppFilterSetings //过滤器配置
+	FilterSettings *AppFilterSettings //过滤器配置
 
 	LogHandler func(s string , video string) //日志回调
 	SuccessHandler func(video string) //成功回调
@@ -100,8 +100,8 @@ func (app *VideoSrt) InitTranslateConfig (translateSettings *VideoSrtTranslateSt
 	app.TranslateCfg = translateSettings
 }
 //加载过滤器配置
-func (app *VideoSrt) InitFilterConfig (filterSetings *AppFilterSetings) {
-	app.FilterSetings = filterSetings
+func (app *VideoSrt) InitFilterConfig (filterSettings *AppFilterSettings) {
+	app.FilterSettings = filterSettings
 }
 
 
@@ -117,7 +117,7 @@ func (app *VideoSrt) SetSrtDir(dir string)  {
 	app.SrtDir = dir
 }
 
-func (app *VideoSrt) SetOutputType(output *AppSetingsOutput)  {
+func (app *VideoSrt) SetOutputType(output *AppSettingsOutput)  {
 	app.OutputType = output
 }
 
@@ -626,15 +626,15 @@ func AliyunAudioResultTranslate(app *VideoSrt , video string , AudioResult map[i
 
 //阿里云识别字幕过滤
 func AliyunResultFilter(app *VideoSrt , video string , AudioResult map[int64][] *aliyun.AliyunAudioRecognitionResult , IntelligentBlockResult map[int64][] *aliyun.AliyunAudioRecognitionResult) {
-	if !app.FilterSetings.DefinedFilter.Switch && !app.FilterSetings.GlobalFilter.Switch {
+	if !app.FilterSettings.DefinedFilter.Switch && !app.FilterSettings.GlobalFilter.Switch {
 		return
 	}
 
 	app.Log("字幕过滤处理中 ..." , video)
 
 	//语气词过滤
-	if app.FilterSetings.GlobalFilter.Switch && strings.TrimSpace(app.FilterSetings.GlobalFilter.Words) != "" {
-		modalWords := strings.Split(app.FilterSetings.GlobalFilter.Words , "\r\n")
+	if app.FilterSettings.GlobalFilter.Switch && strings.TrimSpace(app.FilterSettings.GlobalFilter.Words) != "" {
+		modalWords := strings.Split(app.FilterSettings.GlobalFilter.Words , "\r\n")
 
 		for _,result := range IntelligentBlockResult {
 			for _ , data := range result {
@@ -663,8 +663,8 @@ func AliyunResultFilter(app *VideoSrt , video string , AudioResult map[int64][] 
 	}
 
 	//自定义规则过滤
-	if app.FilterSetings.DefinedFilter.Switch && len(app.FilterSetings.DefinedFilter.Rule) > 0 {
-		rules := app.FilterSetings.DefinedFilter.Rule
+	if app.FilterSettings.DefinedFilter.Switch && len(app.FilterSettings.DefinedFilter.Rule) > 0 {
+		rules := app.FilterSettings.DefinedFilter.Rule
 
 		for _,result := range IntelligentBlockResult {
 			for _ , data := range result {

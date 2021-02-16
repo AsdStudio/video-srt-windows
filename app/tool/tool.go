@@ -17,7 +17,7 @@ import (
 
 
 func LocaleInit(lang string,file string) error {
-	//lang := app.Setings.GetCacheAppSetingsData().ShowLanguage
+	//lang := app.Settings.GetCacheAppSettingsData().ShowLanguage
 	if err := i18n.SetMessage(lang,file) ; err != nil {
 		return err
 	}

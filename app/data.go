@@ -43,7 +43,7 @@ type TranslateEngineAppStruct struct {
 type SpeechEngineAppStruct struct {
 	Data *datacache.AppCache
 }
-type AppSetingsAppStruct struct {
+type AppSettingsAppStruct struct {
 	Data *datacache.AppCache
 }
 type AppFilterAppStruct struct {
@@ -54,7 +54,7 @@ var RootDir string
 var Oss *OssAppStruct
 var Translate *TranslateEngineAppStruct
 var Engine *SpeechEngineAppStruct
-var Setings *AppSetingsAppStruct
+var Settings *AppSettingsAppStruct
 var Filter *AppFilterAppStruct
 
 
@@ -67,13 +67,13 @@ func init()  {
 	Oss = new(OssAppStruct)
 	Translate = new(TranslateEngineAppStruct)
 	Engine = new(SpeechEngineAppStruct)
-	Setings = new(AppSetingsAppStruct)
+	Settings = new(AppSettingsAppStruct)
 	Filter = new(AppFilterAppStruct)
 
 	Oss.Data =  datacache.NewAppCahce(RootDir , "oss")
 	Translate.Data =  datacache.NewAppCahce(RootDir , "translate_engine")
 	Engine.Data =  datacache.NewAppCahce(RootDir , "engine")
-	Setings.Data =  datacache.NewAppCahce(RootDir , "setings")
+	Settings.Data =  datacache.NewAppCahce(RootDir , "Settings")
 	Filter.Data =  datacache.NewAppCahce(RootDir , "filter")
 }
 
@@ -93,7 +93,7 @@ type OperateFrom struct {
 	OutputLrc bool
 	OutputTxt bool
 
-	OutputType *AppSetingsOutput //输出文件类型
+	OutputType *AppSettingsOutput //输出文件类型
 	OutputEncode int //输出文件编码
 	SoundTrack int //输出音轨
 }
@@ -122,18 +122,18 @@ type ShowLanguage struct {
 	Code string
 }
 
-type AppSetingsOutput struct {
+type AppSettingsOutput struct {
 	SRT bool
 	LRC bool
 	TXT bool
 }
 
 //应用配置结构
-type AppSetings struct {
+type AppSettings struct {
 	CurrentEngineId int //目前语音引擎Id
 	CurrentTranslateEngineId int //目前翻译引擎Id
 	MaxConcurrency int //任务最大处理并发数
-	OutputType *AppSetingsOutput //输出文件类型
+	OutputType *AppSettingsOutput //输出文件类型
 	OutputEncode int //输出文件编码
 	SrtFileDir string //Srt文件输出目录
 	SoundTrack int //输出音轨
@@ -163,7 +163,7 @@ type AppDefinedFilterRule struct {
 	Way int //规则类型
 }
 //应用字幕过滤器结构
-type AppFilterSetings struct {
+type AppFilterSettings struct {
 	//通用过滤器
 	GlobalFilter struct{
 		Switch bool
@@ -183,59 +183,59 @@ type TaskHandleFile struct {
 }
 
 //根据配置初始化表单
-func (from *OperateFrom) Init(setings *AppSetings)  {
-	from.OutputType = new(AppSetingsOutput)
-	if setings.CurrentEngineId != 0 {
-		from.EngineId = setings.CurrentEngineId
+func (from *OperateFrom) Init(Settings *AppSettings)  {
+	from.OutputType = new(AppSettingsOutput)
+	if Settings.CurrentEngineId != 0 {
+		from.EngineId = Settings.CurrentEngineId
 	}
-	if setings.CurrentTranslateEngineId != 0 {
-		from.TranslateEngineId = setings.CurrentTranslateEngineId
+	if Settings.CurrentTranslateEngineId != 0 {
+		from.TranslateEngineId = Settings.CurrentTranslateEngineId
 	}
 
-	if !setings.OutputType.LRC && !setings.OutputType.SRT && !setings.OutputType.TXT {
+	if !Settings.OutputType.LRC && !Settings.OutputType.SRT && !Settings.OutputType.TXT {
 		from.OutputType.SRT = true
 		from.OutputSrt = true
 	} else {
-		from.OutputType = setings.OutputType
-		if setings.OutputType.SRT {
+		from.OutputType = Settings.OutputType
+		if Settings.OutputType.SRT {
 			from.OutputSrt = true
 		}
-		if setings.OutputType.TXT {
+		if Settings.OutputType.TXT {
 			from.OutputTxt = true
 		}
-		if setings.OutputType.LRC {
+		if Settings.OutputType.LRC {
 			from.OutputLrc = true
 		}
 	}
 
-	if setings.OutputEncode == 0 {
+	if Settings.OutputEncode == 0 {
 		from.OutputEncode = OUTPUT_ENCODE_UTF8 //默认编码
 	} else {
-		from.OutputEncode = setings.OutputEncode
+		from.OutputEncode = Settings.OutputEncode
 	}
 
-	from.OutputMainSubtitleInputLanguage = setings.OutputMainSubtitleInputLanguage
+	from.OutputMainSubtitleInputLanguage = Settings.OutputMainSubtitleInputLanguage
 
-	if setings.SoundTrack == 0 {
+	if Settings.SoundTrack == 0 {
 		from.SoundTrack = 1 //默认输出音轨一
 	} else {
-		from.SoundTrack = setings.SoundTrack
+		from.SoundTrack = Settings.SoundTrack
 	}
 
 	//默认翻译设置
-	if setings.InputLanguage == 0 {
+	if Settings.InputLanguage == 0 {
 		from.InputLanguage = LANGUAGE_ZH
 	} else {
-		from.InputLanguage = setings.InputLanguage
+		from.InputLanguage = Settings.InputLanguage
 	}
-	if setings.OutputLanguage == 0 {
+	if Settings.OutputLanguage == 0 {
 		from.OutputLanguage = LANGUAGE_ZH
 	} else {
-		from.OutputLanguage = setings.OutputLanguage
+		from.OutputLanguage = Settings.OutputLanguage
 	}
 
-	from.TranslateSwitch = setings.TranslateSwitch
-	from.BilingualSubtitleSwitch = setings.BilingualSubtitleSwitch
+	from.TranslateSwitch = Settings.TranslateSwitch
+	from.BilingualSubtitleSwitch = Settings.BilingualSubtitleSwitch
 }
 
 //获取 输出文件选项列表
@@ -313,19 +313,19 @@ func GetShowLanguage() []*ShowLanguage {
 }
 
 //获取 应用配置
-func (setings *AppSetingsAppStruct) GetCacheAppSetingsData() *AppSetings {
-	data := new(AppSetings)
-	data.OutputType = new(AppSetingsOutput)
-	vdata := setings.Data.Get(data)
-	if v, ok := vdata.(*AppSetings); ok {
+func (Settings *AppSettingsAppStruct) GetCacheAppSettingsData() *AppSettings {
+	data := new(AppSettings)
+	data.OutputType = new(AppSettingsOutput)
+	vdata := Settings.Data.Get(data)
+	if v, ok := vdata.(*AppSettings); ok {
 		return v
 	}
 	return data
 }
 
 //设置 应用配置
-func (setings *AppSetingsAppStruct) SetCacheAppSetingsData(data *AppSetings)  {
-	setings.Data.Set(data)
+func (Settings *AppSettingsAppStruct) SetCacheAppSettingsData(data *AppSettings)  {
+	Settings.Data.Set(data)
 }
 
 
@@ -334,17 +334,17 @@ func (setings *AppSetingsAppStruct) SetCacheAppSetingsData(data *AppSetings)  {
 
 
 //获取 应用过滤器配置
-func (setings *AppFilterAppStruct) GetCacheAppFilterData() *AppFilterSetings {
-	data := new(AppFilterSetings)
-	vdata := setings.Data.Get(data)
-	if v, ok := vdata.(*AppFilterSetings); ok {
+func (Settings *AppFilterAppStruct) GetCacheAppFilterData() *AppFilterSettings {
+	data := new(AppFilterSettings)
+	vdata := Settings.Data.Get(data)
+	if v, ok := vdata.(*AppFilterSettings); ok {
 		return v
 	}
 	return data
 }
 //设置 应用过滤器配置
-func (setings *AppFilterAppStruct) SetCacheAppFilterData(data *AppFilterSetings)  {
-	setings.Data.Set(data)
+func (Settings *AppFilterAppStruct) SetCacheAppFilterData(data *AppFilterSettings)  {
+	Settings.Data.Set(data)
 }
 
 //过滤类型选项结构
