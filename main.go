@@ -21,7 +21,8 @@ var AppRootDir string
 var mw *MyMainWindow
 
 var UseLanguage = Settings.GetCacheAppSettingsData().ShowLanguage
-var Fontfamily string
+
+
 var (
 	outputSrtChecked *walk.CheckBox
 	outputLrcChecked *walk.CheckBox
@@ -30,6 +31,7 @@ var (
 	globalFilterChecked *walk.CheckBox
 	definedFilterChecked *walk.CheckBox
 )
+
 
 
 func init()  {
