@@ -84,7 +84,7 @@ func(mw *MyMainWindow) RunAppSetingDialog(owner walk.Form , confirmCall func(*Ap
 
 
 					Label{
-						Text: "关闭软件智能分段处理:",
+						Text: "关闭智能分段处理:",
 					},
 					CheckBox{
 						Checked: Bind("CloseIntelligentBlockSwitch"),
@@ -96,10 +96,23 @@ func(mw *MyMainWindow) RunAppSetingDialog(owner walk.Form , confirmCall func(*Ap
 						Checked: Bind("CloseAutoDeleteOssTempFile"),
 					},
 					Label{
-						Text: "关闭软件新版本提醒:",
+						Text: "关闭新版本提醒:",
 					},
 					CheckBox{
 						Checked: Bind("CloseNewVersionMessage"),
+					},
+					Label{
+						Text: "语言：",
+					},
+					ComboBox{
+						Value: Bind("Language"),
+						BindingMember: "Code",
+						DisplayMember: "Name",
+						Model: GetShowLanguage(),
+						ColumnSpan: 3,
+						MaxSize:Size{Width:80},
+						OnCurrentIndexChanged: func() {
+						},
 					},
 				},
 			},

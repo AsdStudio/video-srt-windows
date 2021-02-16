@@ -3,6 +3,7 @@ package tool
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"github.com/unknwon/i18n"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -13,6 +14,15 @@ import (
 	"syscall"
 	"time"
 )
+
+
+func LocaleInit(lang string,file string) error {
+	//lang := app.Setings.GetCacheAppSetingsData().ShowLanguage
+	if err := i18n.SetMessage(lang,file) ; err != nil {
+		return err
+	}
+	return nil
+}
 
 //验证 s 是否存在 slice 中
 func InSliceString(s string , slices []string) bool {

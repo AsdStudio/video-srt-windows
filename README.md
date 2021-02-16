@@ -5,7 +5,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/wxbool/video-srt-windows?logo=github&style=flat-square)](https://github.com/wxbool/video-srt-windows/network)
 ![GitHub Action](https://github.com/wxbool/video-srt-windows/workflows/Go/badge.svg?branch=master)
 
-## 简介
+## 简介  Introduction
 
 `VideoSrt` 是用 `Golang`语言，基于 [lxn/walk](https://github.com/lxn/walk) Windows-GUI 工具包开发。
 
@@ -28,11 +28,11 @@ B站Up主自制教程：[https://search.bilibili.com/all?keyword=videosrt](https
 线上“文字配音/字幕配音/文章转视频”解决方案：[幕言](https://www.mu-yan.com/?videosrt)
 
 <a name="0b884e4f"></a>
-## 界面预览
+## 界面预览  Interface preview
 
 ![](https://pic.downk.cc/item/5f28c7ea14195aa594369a59.gif)
 
-## 应用场景
+## 应用场景  Application scenario
 
 - 识别**视频/音频**的语音生成字幕文件（支持中英互译，双语字幕）
 - 提取**视频/音频**的语音文本
@@ -40,7 +40,7 @@ B站Up主自制教程：[https://search.bilibili.com/all?keyword=videosrt](https
 
 
 <a name="b89d37d3"></a>
-## 软件优势
+## 软件优势  Advantage
 
 - 使用阿里云语音识别接口，准确度高，标准普通话/英语识别率95%以上
 - 视频识别无需上传原视频，方便快速且节省时间
@@ -53,10 +53,10 @@ B站Up主自制教程：[https://search.bilibili.com/all?keyword=videosrt](https
 - 支持批量翻译、编码SRT字幕文件
 
 <a name="Download"></a>
-## Download
+## 下载  Download
 
 <a name="e66a66f1"></a>
-##### 下载地址:
+##### CDN下载地址:
 - (v0.3.2)（含ffmpeg依赖） [点我下载](http://file.viggo.site/video-srt/0.3.2/video-srt-gui-ffmpeg-0.3.2-x64.zip)
 - (v0.3.2)（不含ffmpeg依赖） [点我下载](http://file.viggo.site/video-srt/0.3.2/video-srt-gui-0.3.2-x64.zip)
 - (v0.2.6)（含ffmpeg依赖） [点我下载](http://file.viggo.site/video-srt/0.2.6/video-srt-gui-ffmpeg-0.2.6-x64.zip)
@@ -65,13 +65,13 @@ B站Up主自制教程：[https://search.bilibili.com/all?keyword=videosrt](https
 你也可以到 [release](https://github.com/wxbool/video-srt-windows/releases) 页面下载其他版本
 
 <a name="1bbbb204"></a>
-## 注意事项
+## 注意事项  Precautions
 
 - 软件目录下的 `data`目录为数据存储目录，请勿删除。否则可能会导致配置丢失
 - 项目使用了 [ffmpeg](http://ffmpeg.org/) 依赖，除非您的电脑已经安装了`ffmpeg`环境，否则请下载包含`ffmpeg`依赖的软件包
 
 <a name="9a751511"></a>
-## 升级说明
+## 升级说明  Description
 
 - 先下载最新版本的软件包
 - 然后用旧版本软件的 `data` 文件夹覆盖新版软件的 `data` 文件夹
@@ -90,14 +90,15 @@ B站Up主自制教程：[https://search.bilibili.com/all?keyword=videosrt](https
 
 
 <a name="f3dc992e"></a>
-## 交流&联系
+## 交流&联系 Connect
 
 - QQ：2012210812
+- E-mail:2012210812@qq.com
 - QQ交流群：[109695078](https://jq.qq.com/?_wv=1027&k=5Eco2hO)
 
     ![image.png](https://cdn.nlark.com/yuque/0/2019/png/695280/1577104071489-4cc85009-29a0-42d6-8901-0cf3b45dee68.png#align=left&display=inline&height=177&name=image.png&originHeight=177&originWidth=172&size=17846&status=done&style=none&width=172)
 
 <a name="AyJ3E"></a>
-## 捐赠&支持
+## 捐赠&支持 Donate
 
 ![](https://pic2.superbed.cn/item/5e00b93476085c3289dd2dc0.png)

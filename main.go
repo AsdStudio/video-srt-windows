@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
+	"github.com/unknwon/i18n"
 	"log"
 	"runtime"
 	"strings"
@@ -17,6 +19,8 @@ const APP_VERSION = "0.3.2"
 
 var AppRootDir string
 var mw *MyMainWindow
+
+var UseLanguage = Setings.GetCacheAppSetingsData().ShowLanguage
 
 var (
 	outputSrtChecked *walk.CheckBox
@@ -35,6 +39,10 @@ func init()  {
 	mw = new(MyMainWindow)
 
 	AppRootDir = GetAppRootDir()
+
+	UseLanguageFile :=fmt.Sprintf("language/%s.ini",UseLanguage)
+	_ = tool.LocaleInit(UseLanguage, UseLanguageFile)
+	log.Println(UseLanguage,UseLanguageFile,i18n.Tr(UseLanguage,"Hello"))
 	if AppRootDir == "" {
 		panic("应用根目录获取失败")
 	}
@@ -46,6 +54,7 @@ func init()  {
 	}
 }
 
+var locale string
 
 func main() {
 	var taskFiles = new(TaskHandleFile)
@@ -107,7 +116,7 @@ func main() {
 	if err := (MainWindow{
 		AssignTo: &mw.MainWindow,
 		Icon:"./data/img/index.png",
-		Title:    "VideoSrt - 一键字幕生成、字幕翻译小工具" + " - " + APP_VERSION,
+		Title:    i18n.Tr(UseLanguage,"Hello")+"VideoSrt - 一键字幕生成、字幕翻译小工具" + " - " + APP_VERSION,
 		Font:Font{Family: "微软雅黑", PointSize: 9},
 		ToolBar: ToolBar{
 			ButtonStyle: ToolBarButtonImageBeforeText,
@@ -257,6 +266,7 @@ func main() {
 									appSetings.CloseNewVersionMessage = setings.CloseNewVersionMessage
 									appSetings.CloseAutoDeleteOssTempFile = setings.CloseAutoDeleteOssTempFile
 									appSetings.CloseIntelligentBlockSwitch = setings.CloseIntelligentBlockSwitch
+									appSetings.ShowLanguage = setings.ShowLanguage
 
 									multitask.SetMaxConcurrencyNumber( setings.MaxConcurrency )
 									srtTranslateMultitask.SetMaxConcurrencyNumber( setings.MaxConcurrency )
@@ -1050,7 +1060,11 @@ func main() {
 	//校验依赖库
 	if e := ffmpeg.VailFfmpegLibrary(); e != nil {
 		mw.NewErrormationTips("错误" , "请先下载并安装 ffmpeg 软件，才可以正常使用软件哦")
-		tool.OpenUrl("https://gitee.com/641453620/video-srt-windows")
+		if locale != "zh_CN" {
+			tool.OpenUrl("https://github.com/wxbool/video-srt-windows")
+		}else {
+			tool.OpenUrl("https://gitee.com/641453620/video-srt-windows")
+		}
 		return
 	}
 

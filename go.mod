@@ -21,6 +21,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go v3.0.128+incompatible
 	github.com/youpy/go-riff v0.0.0-20131220112943-557d78c11efb // indirect
 	github.com/youpy/go-wav v0.0.0-20160223082350-b63a9887d320 // indirect
+	github.com/unknwon/i18n v0.0.0-20200823051745-09abd91c7f2c
 	golang.org/x/sys v0.0.0-20191120155948-bd437916bb0e // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	gopkg.in/Knetic/govaluate.v3 v3.0.0 // indirect

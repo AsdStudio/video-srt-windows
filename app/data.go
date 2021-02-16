@@ -116,6 +116,12 @@ type LanguageSelects struct {
 	Name string
 }
 
+type ShowLanguage struct {
+	File string
+	Name string
+	Code string
+}
+
 type AppSetingsOutput struct {
 	SRT bool
 	LRC bool
@@ -141,6 +147,8 @@ type AppSetings struct {
 	CloseIntelligentBlockSwitch bool //关闭智能分段
 	CloseNewVersionMessage bool //关闭软件新版本提醒（默认开启）[false开启 true关闭]
 	CloseAutoDeleteOssTempFile bool //关闭自动删除临时音频文件（默认开启）[false开启 true关闭]
+
+	ShowLanguage string
 }
 
 
@@ -288,6 +296,21 @@ func GetTranslateOutputLanguageOptionsSelects() []*LanguageSelects {
 	}
 }
 
+func GetShowLanguage() []*ShowLanguage {
+	return []*ShowLanguage{
+		&ShowLanguage{File:"language/zh_Hans.ini" , Name:"简体中文" , Code:"zh_Hans"},
+		&ShowLanguage{File:"language/en.ini" , Name:"English" , Code:"en"},
+		&ShowLanguage{File:"language/zh_Hant.ini" , Name:"繁體中文" , Code:"zh_Hant"},
+		//&ShowLanguage{File:"LANGUAGE_JP" , Name:"日语" , Code:"zh_Hans"},
+		//&ShowLanguage{File:"LANGUAGE_KOR" , Name:"韩语" , Code:"zh_Hans"},
+		//&ShowLanguage{File:"LANGUAGE_FRA" , Name:"法语" , Code:"zh_Hans"},
+		//&ShowLanguage{File:"LANGUAGE_DE" , Name:"德语" , Code:"zh_Hans"},
+		//&ShowLanguage{File:"LANGUAGE_SPA" , Name:"西班牙语" , Code:"zh_Hans"},
+		//&ShowLanguage{File:"LANGUAGE_RU" , Name:"俄语" , Code:"zh_Hans"},
+		//&ShowLanguage{File:"LANGUAGE_IT" , Name:"意大利语" , Code:"zh_Hans"},
+		//&ShowLanguage{File:"LANGUAGE_TH" , Name:"泰语" , Code:"zh_Hans"},
+	}
+}
 
 //获取 应用配置
 func (setings *AppSetingsAppStruct) GetCacheAppSetingsData() *AppSetings {
