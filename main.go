@@ -126,7 +126,7 @@ func main() {
 	if err := (MainWindow{
 		AssignTo: &mw.MainWindow,
 		Icon:"./data/img/index.png",
-		Title:"VideoSrt - 一键字幕生成、字幕翻译小工具" + " -v" + APP_VERSION,
+		Title:"VideoSrt - 一键字幕生成/字幕翻译神器" + " -v" + APP_VERSION,
 		Font:Font{Family: Fontfamily, PointSize: 9},
 		ToolBar: ToolBar{
 			ButtonStyle: ToolBarButtonImageBeforeText,
