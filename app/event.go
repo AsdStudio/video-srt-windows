@@ -105,7 +105,7 @@ func(mw *MyMainWindow) RunAppSetingDialog(owner walk.Form , confirmCall func(*Ap
 						Text: "语言：",
 					},
 					ComboBox{
-						Value: Bind("Language"),
+						Value: Bind("ShowLanguage"),
 						BindingMember: "Code",
 						DisplayMember: "Name",
 						Model: GetShowLanguage(),
