@@ -48,9 +48,8 @@ func init()  {
 		Fontfamily="Tahoma"
 	}
 
-	_ = tool.LocaleInit(UseLanguage, fmt.Sprintf("language/%s.ini",UseLanguage))
 	//log locale
-	log.Println(UseLanguage,fmt.Sprintf("language/%s.ini",UseLanguage),i18n.Tr(UseLanguage,"Hello"))
+	log.Println(tool.LocaleInit(UseLanguage, fmt.Sprintf("language/%s.ini",UseLanguage)),UseLanguage,fmt.Sprintf("language/%s.ini",UseLanguage),i18n.Tr(UseLanguage,"Hello"))
 	//log
 	if AppRootDir == "" {
 		panic("应用根目录获取失败")
