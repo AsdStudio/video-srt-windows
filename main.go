@@ -32,7 +32,18 @@ var (
 	definedFilterChecked *walk.CheckBox
 )
 
+type MyController struct{
+	// ...other fields
+	i18n.Locale
+}
+//...
 
+func Tr(format string) string{
+	tr := &MyController{
+		Locale: i18n.Locale{UseLanguage},
+	}
+	return tr.Tr(format)
+}
 
 func init()  {
 	//设置可同时执行的最大CPU数
@@ -49,7 +60,6 @@ func init()  {
 	default:
 		Fontfamily="Tahoma"
 	}
-
 	//log locale
 	log.Println(tool.LocaleInit(UseLanguage, fmt.Sprintf("language/%s.ini",UseLanguage)),UseLanguage,fmt.Sprintf("language/%s.ini",UseLanguage),i18n.Tr(UseLanguage,"Hello"))
 	//log
@@ -63,8 +73,6 @@ func init()  {
 		ffmpeg.VailTempFfmpegLibrary(AppRootDir)
 	}
 }
-
-var locale string
 
 func main() {
 	var taskFiles = new(TaskHandleFile)
@@ -123,22 +131,22 @@ func main() {
 	//注册[字幕翻译]多任务
 	var srtTranslateMultitask = NewTranslateMultitask(appSettings.MaxConcurrency)
 
-
+	//"VideoSrt - 一键字幕生成/字幕翻译神器"
 	if err := (MainWindow{
 		AssignTo: &mw.MainWindow,
 		Icon:"./data/img/index.png",
-		Title:"VideoSrt - 一键字幕生成/字幕翻译神器" + " -v" + APP_VERSION,
+		Title:Tr("Title") + " v" + APP_VERSION,
 		Font:Font{Family: Fontfamily, PointSize: 9},
 		ToolBar: ToolBar{
 			ButtonStyle: ToolBarButtonImageBeforeText,
 			Items: []MenuItem{
 				Menu{
-					Text:"打开",
+					Text:Tr("common.Open"),
 					Image: "./data/img/open.png",
 					Items: []MenuItem{
 						Action{
 							Image:  "./data/img/media.png",
-							Text:   "媒体文件",
+							Text:   Tr("Media Files"),
 							OnTriggered: func() {
 								dlg := new(walk.FileDialog)
 								//选择待操作的文件列表
@@ -260,7 +268,7 @@ func main() {
 					Image: "./data/img/Settings.png",
 					Items: []MenuItem{
 						Action{
-							Text:    "OSS对象存储设置",
+							Text:    "OSS设置",
 							Image:   "./data/img/oss.png",
 							OnTriggered: func() {
 								mw.RunObjectStorageSettingDialog(mw)
@@ -287,7 +295,7 @@ func main() {
 					},
 				},
 				Menu{
-					Text:  "帮助文档/支持",
+					Text:  "帮助&支持",
 					Image: "./data/img/about.png",
 					Items: []MenuItem{
 						Action{
@@ -314,7 +322,7 @@ func main() {
 							},
 						},
 						Action{
-							Text:        "QQ交流群",
+							Text:		"QQ交流群",
 							Checked:false,
 							Visible:false,
 							Checkable:false,
@@ -328,7 +336,7 @@ func main() {
 					Text:  "语音合成配音/文章转视频",
 					Image: "./data/img/muyan.png",
 					OnTriggered: func() {
-						_ = tool.OpenUrl("https://www.mu-yan.net/")
+						_ = tool.OpenUrl("https://www.muyanpeiyin.com/")
 					},
 				},
 			},
@@ -1071,7 +1079,7 @@ func main() {
 	//校验依赖库
 	if e := ffmpeg.VailFfmpegLibrary(); e != nil {
 		mw.NewErrormationTips("错误" , "请先下载并安装 ffmpeg 软件，才可以正常使用软件哦")
-		if locale != "zh_CN" {
+		if UseLanguage != "zh_Hans" {
 			tool.OpenUrl("https://github.com/wxbool/video-srt-windows")
 		}else {
 			tool.OpenUrl("https://gitee.com/641453620/video-srt-windows")
