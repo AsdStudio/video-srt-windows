@@ -217,7 +217,7 @@ func (app *SrtTranslateApp) SrtTranslate(file string , srtRows []*SrtRows)  {
 
 		//百度翻译标准版
 		if app.TranslateCfg.Supplier == TRANSLATE_SUPPLIER_BAIDU && app.TranslateCfg.BaiduTranslate.AuthenType == translate.ACCOUNT_COMMON_AUTHEN {
-			app.Log("你使用的是 “百度翻译标准版” 账号，翻译速度较慢，请耐心等待 ..." , file)
+			app.Log("您使用的是 “百度翻译标准版” 账号，翻译速度较慢，请耐心等待 ..." , file)
 		}
 	} else {
 		return
@@ -403,7 +403,7 @@ func (app *SrtTranslateApp) RunTranslate(s string , file string) (*SrtTranslateR
 		baiduResult,transErr := app.TranslateCfg.BaiduTranslate.TranslateBaidu(s , from , to)
 		for transErr != nil && trys <= 5 {
 			trys++
-			app.Log("翻译请求失败，重试第" + strconv.Itoa(trys) + "次 ..." , file)
+			app.Log(fmt.Sprintf("翻译请求失败，重试第%s次 ...",strconv.Itoa(trys)), file)
 			time.Sleep(time.Second * time.Duration(trys))
 			//重试
 			baiduResult,transErr = app.TranslateCfg.BaiduTranslate.TranslateBaidu(s , from , to)
@@ -430,7 +430,7 @@ func (app *SrtTranslateApp) RunTranslate(s string , file string) (*SrtTranslateR
 		txResult,transErr := app.TranslateCfg.TengxunyunTranslate.TranslateTengxunyun(s , from , to)
 		for transErr != nil && trys <= 5 {
 			trys++
-			app.Log("翻译请求失败，重试第" + strconv.Itoa(trys) + "次 ..." , file)
+			app.Log(fmt.Sprintf("翻译请求失败，重试第%s次 ...",strconv.Itoa(trys)) , file)
 			time.Sleep(time.Second * time.Duration(trys))
 			//重试
 			txResult,transErr = app.TranslateCfg.TengxunyunTranslate.TranslateTengxunyun(s , from , to)

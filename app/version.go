@@ -76,7 +76,7 @@ func (v *AppVersion) ShowVersionNotifyInfo (version string , own *MyMainWindow) 
 	if err := ni.SetVisible(true); err != nil {
 		return err
 	}
-	if err := ni.ShowMessage("更新提醒" , "检测到VideoSrt的新版本（v"+version+"），请及时下载更新哦") ; err != nil {
+	if err := ni.ShowMessage("更新提醒" , fmt.Sprintf("检测到VideoSrt的新版本（v%s），请及时下载更新哦",version)) ; err != nil {
 		return err
 	}
 	return nil

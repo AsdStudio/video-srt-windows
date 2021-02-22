@@ -300,7 +300,7 @@ func (app *VideoSrt) RunTranslate(s string , file string) (*VideoSrtTranslateRes
 		baiduResult,transErr := app.TranslateCfg.BaiduTranslate.TranslateBaidu(s , from , to)
 		for transErr != nil && trys <= 5 {
 			trys++
-			app.Log("翻译请求失败，重试第" + strconv.Itoa(trys) + "次 ..." , file)
+			app.Log(fmt.Sprintf("翻译请求失败，重试第%s次 ...",strconv.Itoa(trys)) , file)
 			time.Sleep(time.Second * time.Duration(trys))
 			//重试
 			baiduResult,transErr = app.TranslateCfg.BaiduTranslate.TranslateBaidu(s , from , to)
@@ -327,7 +327,7 @@ func (app *VideoSrt) RunTranslate(s string , file string) (*VideoSrtTranslateRes
 		txResult,transErr := app.TranslateCfg.TengxunyunTranslate.TranslateTengxunyun(s , from , to)
 		for transErr != nil && trys <= 5 {
 			trys++
-			app.Log("翻译请求失败，重试第" + strconv.Itoa(trys) + "次 ..." , file)
+			app.Log(fmt.Sprintf("翻译请求失败，重试第%s次 ...",strconv.Itoa(trys)) , file)
 			time.Sleep(time.Second * time.Duration(trys))
 			//重试
 			txResult,transErr = app.TranslateCfg.TengxunyunTranslate.TranslateTengxunyun(s , from , to)
